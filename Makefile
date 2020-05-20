@@ -1,14 +1,16 @@
-CFLAGS += -g -O2 -m64 -std=c99 -pedantic \
+CFLAGS += -O2 -m64 -std=gnu99 -pedantic \
 	-Wall -Wshadow -Wpointer-arith -Wcast-qual -Wformat -Wformat-security \
 	-Werror=format-security -Wstrict-prototypes -Wmissing-prototypes \
 	-D_FORTIFY_SOURCE=2 -fPIC -fno-strict-overflow
-SRCS = hazmat.c randombytes.c sss.c tweetnacl.c
+SRCS = hazmat.c sss.c tweetnacl.c
 OBJS := ${SRCS:.c=.o}
+UTILS := sss_split sss_combine
+LIBS := -lsodium
 UNAME_S := $(shell uname -s)
 
-all: libsss.a
+all: libsss.a $(UTILS)
 
-libsss.a: randombytes/librandombytes.a $(OBJS)
+libsss.a: $(OBJS)
     ifeq ($(UNAME_S),Linux)
 		$(AR) -rcs libsss.a $^
     endif
@@ -16,23 +18,30 @@ libsss.a: randombytes/librandombytes.a $(OBJS)
 		libtool -static -o libsss.a $^
     endif
 
-randombytes/librandombytes.a:
-	$(MAKE) -C randombytes librandombytes.a
-
 # Force unrolling loops on hazmat.c
 hazmat.o: CFLAGS += -funroll-loops
 
-%.out: %.o randombytes/librandombytes.a
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
+%.out: %.o
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LIBS)
 	$(MEMCHECK) ./$@
 
 test_hazmat.out: $(OBJS)
 test_sss.out: $(OBJS)
+
+sss_split: sss_split.o sss_common.o libsss.a
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LIBS)
+
+sss_combine: sss_combine.o sss_common.o libsss.a
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LIBS)
 
 .PHONY: check
 check: test_hazmat.out test_sss.out
 
 .PHONY: clean
 clean:
-	$(MAKE) -C randombytes $@
-	$(RM) *.o *.gch *.a *.out
+	$(RM) *.o *.gch *.a *.out $(UTILS)
+
+.PHONY: install
+install: $(UTILS)
+	cp $(UTILS) /usr/local/sbin
+
