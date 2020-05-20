@@ -5,8 +5,8 @@ https://github.com/dsprenkels/sss
 
 This fork adds the following:
 
-`generate_shares.sh`: A script to generate a new secret key of 512 bits,
-                      split over several USB sticks.
+### `generate_shares.sh`
+A script to generate a new secret key of 512 bits,split over several USB sticks.
 
   Usage:
 
@@ -20,9 +20,9 @@ This fork adds the following:
   After this only N-1 of the USB sticks need to be present in
   order to recreate the secret key (using `sss_combine`).
 
-`sss_split`: This utility is installed in `/usr/local/sbin` upon
-             install (`sudo make install`). It is called by
-             `generate_shares.sh`.
+### `sss_split`
+This utility is installed in `/usr/local/sbin` upon install (`sudo make install`).
+It is called by `generate_shares.sh`.
 
   Usage:
 
@@ -32,8 +32,8 @@ This fork adds the following:
   which will split the secret over as many shared secrets as
   are given on the command line.
 
-`sss_combine`: This utility is installed in `/usr/local/sbin` upon
-               install (`sudo make install`).
+### `sss_combine`
+This utility is installed in `/usr/local/sbin` upon install (`sudo make install`).
 
   Usage:
 
