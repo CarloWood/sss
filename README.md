@@ -15,7 +15,7 @@ This fork adds the following:
   unique however, so you could for example use "MASTERKEY1", "MASTERKEY2",
   etc. The labels should show up in /dev/disk/by-label.
 
-  Run: sudo `./generate_shares.sh` and follow the instructions.
+  Run: `sudo ./generate_shares.sh` and follow the instructions.
 
   After this only N-1 of the USB sticks need to be present in
   order to recreate the secret key (using `sss_combine`).
