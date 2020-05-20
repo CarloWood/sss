@@ -21,7 +21,7 @@ This fork adds the following:
   order to recreate the secret key (using `sss_combine`).
 
 `sss_split`: This utility is installed in `/usr/local/sbin` upon
-             install (sudo make install). It is called by
+             install (`sudo make install`). It is called by
              `generate_shares.sh`.
 
   Usage:
@@ -33,7 +33,7 @@ This fork adds the following:
   are given on the command line.
 
 `sss_combine`: This utility is installed in `/usr/local/sbin` upon
-               install (sudo make install).
+               install (`sudo make install`).
 
   Usage:
 
