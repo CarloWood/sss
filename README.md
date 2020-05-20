@@ -12,13 +12,13 @@ A script to generate a new secret key of 512 bits, split over several USB sticks
 
   Prepare N USB sticks (minimal three) each with one partition whose
   label starts with "MASTERKEY" (in all caps). Each label must be
-  unique however, so you could for example use "MASTERKEY1", "MASTERKEY2",
+  unique; for example, you could use "MASTERKEY1", "MASTERKEY2",
   etc. The labels should show up in /dev/disk/by-label.
 
   Run: `sudo ./generate_shares.sh` and follow the instructions.
 
-  After this only N-1 of the USB sticks need to be present in
-  order to recreate the secret key (using `sss_combine`).
+  After this, only N - 1 of the USB sticks need to be present in
+  order to recreate the secret key (using `sss_combine`, see below).
 
 ### `sss_split`
 This utility is installed in `/usr/local/sbin` upon install (`sudo make install`).
