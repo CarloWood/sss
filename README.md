@@ -26,7 +26,7 @@ This fork adds the following:
 
   Usage:
 
-  Prepare a file with 64 bytes cryptographically random bytes. Lets
+  Prepare a file with 64 cryptographically random bytes. Lets
   say this file is called `/tmp/ramdisk/secret.key`. Then run:
   `sss_split /tmp/ramdisk/secret.key file1 file2 file3 ...`
   which will split the secret over as many shared secrets as
