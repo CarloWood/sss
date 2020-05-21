@@ -6,7 +6,7 @@ https://github.com/dsprenkels/sss
 This fork adds the following:
 
 ### `generate_shares.sh`
-A wrapper script around `sss_split` to generate a NEW 512 bits secret key,
+A wrapper script around `sss_split` to generate a *new* 512 bits secret key,
 and split it over three or more USB sticks.
 
 Usage:
