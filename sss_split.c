@@ -21,22 +21,15 @@
 int main(int argc, char* argv[])
 {
   initialize(argc, argv);
-  printf("Reading \"%s\" and splitting it into %d secret shares with a threshold of %d.\n", g.secret_filename, g.number_of_shares, g.threshold);
+  if (!g.silent)
+    printf("Reading \"%s\" and splitting it into %d secret shares with a threshold of %d.\n", g.secret_filename, g.number_of_shares, g.threshold);
 
   do
   {
     /* Read the secret key into memory. */
-    int fd = open(g.secret_filename, O_RDONLY | O_CLOEXEC | O_DIRECT);
+    int fd = sss_open_read(g.secret_filename);
     if (fd == -1)
-    {
-      fd = open(g.secret_filename, O_RDONLY);
-      if (fd == -1)
-      {
-        fprintf(stderr, "1. Failed to open \"%s\": %s\n", g.secret_filename, strerror(errno));
-        g.ret = 1;
-        break;
-      }
-    }
+      break;
     int res = read(fd, g.memory, KEYLEN);
     if (res != KEYLEN)
     {
@@ -57,14 +50,11 @@ int main(int argc, char* argv[])
     for (int j = 0; j < g.number_of_shares; ++j)
     {
       char const* filename = argv[j + 2];
-      printf("Writing \"%s\"...\n", filename);
-      fd = open(filename, O_WRONLY | O_CLOEXEC | O_CREAT | O_DIRECT | O_SYNC | O_TRUNC, S_IRUSR | S_IWUSR);
+      if (!g.silent)
+        printf("Writing \"%s\"...\n", filename);
+      fd = sss_open_write(filename);
       if (fd == -1)
-      {
-        fprintf(stderr, "2. Failed to open \"%s\": %s\n", filename, strerror(errno));
-        g.ret = 1;
         continue;
-      }
       unsigned char* buf = g.diskbuf;
       for (int i = 0; i < MULTIPLICITY; ++i)
       {

@@ -1,6 +1,5 @@
 #! /bin/bash
 
-# Assuming a FAT32 fs, use: fatlabel <device> <label>
 read -p "Insert all USB sticks. Make sure they have different labels that start with \"MASTERKEY\" and hit Enter." -s
 echo
 

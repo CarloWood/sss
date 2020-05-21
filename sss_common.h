@@ -25,9 +25,13 @@ struct GlobalVars {
   sss_Key* secrets;
   sss_Keyshare* shares[MULTIPLICITY];
   int ret;
+  int silent;
 };
 
 extern struct GlobalVars g;
 
 void initialize(int argc, char* argv[]);
 void deinitialize(void);
+
+int sss_open_read(char const* filename);
+int sss_open_write(char const* filename);

@@ -21,7 +21,8 @@
 int main(int argc, char* argv[])
 {
   initialize(argc, argv);
-  printf("Reconstructing \"%s\" from %d secret shares...\n", g.secret_filename, g.number_of_shares);
+  if (!g.silent)
+    printf("Reconstructing \"%s\" from %d secret shares...\n", g.secret_filename, g.number_of_shares);
 
   do
   {
@@ -29,14 +30,11 @@ int main(int argc, char* argv[])
     for (int j = 0; j < g.number_of_shares; ++j)
     {
       char const* filename = argv[j + 2];
-      printf("Reading \"%s\"...\n", filename);
-      int fd = open(filename, O_RDONLY | O_CLOEXEC | O_DIRECT);
+      if (!g.silent)
+        printf("Reading \"%s\"...\n", filename);
+      int fd = sss_open_read(filename);
       if (fd == -1)
-      {
-        fprintf(stderr, "Failed to open \"%s\": %s\n", filename, strerror(errno));
-        g.ret = 1;
         break;
-      }
       for (int i = 0; i < MULTIPLICITY; ++i)
       {
         int offset = i == 0 ? 0 : 1;
@@ -65,13 +63,9 @@ int main(int argc, char* argv[])
     if (g.secret_file_exists)
     {
       /* Read existing secret key into memory. */
-      int fd = open(g.secret_filename, O_RDONLY | O_CLOEXEC | O_DIRECT);
+      int fd = sss_open_read(g.secret_filename);
       if (fd == -1)
-      {
-        fprintf(stderr, "Failed to open \"%s\": %s\n", g.secret_filename, strerror(errno));
-        g.ret = 1;
         break;
-      }
       int res = read(fd, g.diskbuf, KEYLEN);
       if (res != KEYLEN)
       {
@@ -82,22 +76,20 @@ int main(int argc, char* argv[])
       close(fd);
       if (memcmp(g.diskbuf, g.memory, KEYLEN) != 0)
       {
-        printf("No match\n");
-        g.ret = 1;
+        if (!g.silent)
+          printf("No match\n");
+        g.ret = -1;
         break;
       }
-      printf("Match\n");
+      if (!g.silent)
+        printf("Match\n");
     }
     else
     {
       /* Write the secret key to memory. */
-      int fd = open(g.secret_filename, O_WRONLY | O_CLOEXEC | O_CREAT | O_DIRECT | O_SYNC | O_TRUNC, S_IRUSR | S_IWUSR);
+      int fd = sss_open_write(g.secret_filename);
       if (fd == -1)
-      {
-        fprintf(stderr, "Failed to open \"%s\": %s\n", g.secret_filename, strerror(errno));
-        g.ret = 1;
         break;
-      }
       int res = write(fd, g.memory, KEYLEN);
       if (res != KEYLEN)
       {
@@ -105,7 +97,7 @@ int main(int argc, char* argv[])
           fprintf(stderr, "Failed to write to \"%s\": %s\n", g.secret_filename, strerror(errno));
         else
           fprintf(stderr, "Failed to write %d bytes to \"%s\".\n", KEYLEN, g.secret_filename);
-        g.ret = 1;
+        g.ret = 3;
         break;
       }
       close(fd);

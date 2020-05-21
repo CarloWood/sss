@@ -20,6 +20,20 @@ struct GlobalVars g;
 
 void initialize(int argc, char* argv[])
 {
+  g.silent = 0;
+  if (argc > 1 && argv[1][0] == '-')
+  {
+    if (argv[1][1] == 's' && argv[1][2] == '\0')
+      g.silent = 1;
+    else
+    {
+      fprintf(stderr, "Unknown option '%s'.\n", argv[1]);
+      exit(2);
+    }
+    argc--;
+    argv++;
+  }
+
   g.number_of_shares = argc - 2;
   g.threshold = g.number_of_shares - 1;
 
@@ -80,4 +94,37 @@ void deinitialize()
     printf("Successfully finished.\n");
   else
     fprintf(stderr, "Terminating with exit code %d.\n", g.ret);
+}
+
+int sss_open_read(char const* filename)
+{
+  int fd = open(filename, O_RDONLY | O_CLOEXEC | O_DIRECT);
+  if (fd == -1)
+  {
+    /* Among others, an USB stick doesn't support O_DIRECT. */
+    if (errno == EINVAL)
+      fd = open(filename, O_RDONLY | O_CLOEXEC);
+    if (fd == -1)
+    {
+      fprintf(stderr, "Failed to open \"%s\" for reading: %s\n", filename, strerror(errno));
+      g.ret = 1;
+    }
+  }
+  return fd;
+}
+
+int sss_open_write(char const* filename)
+{
+  int fd = open(filename, O_WRONLY | O_CLOEXEC | O_CREAT | O_DIRECT | O_SYNC | O_TRUNC, S_IRUSR | S_IWUSR);
+  if (fd == -1)
+  {
+    if (fd == -1 && errno == EINVAL)
+      fd = open(filename, O_WRONLY | O_CLOEXEC | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    if (fd == -1)
+    {
+      fprintf(stderr, "Failed to open \"%s\" for writing: %s\n", g.secret_filename, strerror(errno));
+      g.ret = 1;
+    }
+  }
+  return fd;
 }
