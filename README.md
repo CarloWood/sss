@@ -58,6 +58,7 @@ are given on the command line.
 
 ### `sss_combine`
 This utility is installed in `/usr/local/sbin` upon install (`sudo make install`).
+It is called by `combine_shares.sh`.
 
 Usage:
 
