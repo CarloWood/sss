@@ -39,7 +39,7 @@ Insert at least `N - 1` of the USB sticks in your PC, then run
 contain the secret key. As soon as you are done with the secret
 key you must run `umount $(dirname $FILE)`.
 
-Optionally, an USB stick maybe replaced with a filename of one of
+Optionally, an USB stick may be replaced with a filename of one of
 the shared keys as commandline parameter. It may *not* also be present
 as file in a `MASTERKEY` partition in that case (reducing the
 number of USB sticks further from `N - 1`).
