@@ -37,6 +37,7 @@
 *.hex
 sss_combine
 sss_split
+sss_recover
 
 # Debug files
 *.dSYM/
