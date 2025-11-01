@@ -113,7 +113,7 @@ main(int argc, char *argv[])
 
         uint8_t recovered[MULTIPLICITY][sss_KEY_LEN];
         for (int i = 0; i < MULTIPLICITY; ++i) {
-                const sss_Keyshare *layer = share_sets + i * num_shares;
+                const sss_Keyshare *layer = (const sss_Keyshare *)share_sets + i * num_shares;
                 sss_evaluate_keyshares(recovered[i], layer, (uint8_t) num_shares, share_index);
         }
 
