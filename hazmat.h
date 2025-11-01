@@ -67,4 +67,14 @@ void sss_combine_keyshares(uint8_t key[32],
                            uint8_t k);
 
 
+/*
+ * Evaluate the polynomial defined by the provided key shares at the given
+ * index. The resulting key share value is written to `value`.
+ */
+void sss_evaluate_keyshares(uint8_t value[32],
+                            const sss_Keyshare *shares,
+                            uint8_t k,
+                            uint8_t x_value);
+
+
 #endif /* sss_HAZMAT_H_ */

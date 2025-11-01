@@ -351,3 +351,45 @@ gf256_inv(uint32_t r[8], uint32_t x[8])
 	}
 	unbitslice(key, secret);
 }
+
+
+ void sss_evaluate_keyshares(uint8_t value[32],
+                            const sss_Keyshare *key_shares,
+                            uint8_t k,
+                            uint8_t x_value)
+{
+        size_t share_idx, idx1, idx2;
+        uint32_t xs[k][8], ys[k][8];
+        uint32_t num[8], denom[8], tmp[8];
+        uint32_t result[8] = {0};
+        uint32_t target[8];
+
+        for (share_idx = 0; share_idx < k; share_idx++) {
+                bitslice_setall(xs[share_idx], key_shares[share_idx][0]);
+                bitslice(ys[share_idx], &key_shares[share_idx][1]);
+        }
+
+        bitslice_setall(target, x_value);
+
+        for (idx1 = 0; idx1 < k; idx1++) {
+                memset(num, 0, sizeof(num));
+                memset(denom, 0, sizeof(denom));
+                num[0] = ~0;
+                denom[0] = ~0;
+                for (idx2 = 0; idx2 < k; idx2++) {
+                        if (idx1 == idx2) continue;
+                        memcpy(tmp, target, sizeof(uint32_t[8]));
+                        gf256_add(tmp, xs[idx2]);
+                        gf256_mul(num, num, tmp);
+                        memcpy(tmp, xs[idx1], sizeof(uint32_t[8]));
+                        gf256_add(tmp, xs[idx2]);
+                        gf256_mul(denom, denom, tmp);
+                }
+                gf256_inv(tmp, denom);
+                gf256_mul(num, num, tmp);
+                gf256_mul(num, num, ys[idx1]);
+                gf256_add(result, num);
+        }
+
+        unbitslice(value, result);
+}
