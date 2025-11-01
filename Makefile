@@ -4,7 +4,7 @@ CFLAGS += -g -O2 -m64 -std=c99 -pedantic \
 	-D_FORTIFY_SOURCE=2 -fPIC -fno-strict-overflow
 SRCS = hazmat.c sss.c tweetnacl.c
 OBJS := ${SRCS:.c=.o}
-UTILS := sss_split sss_combine
+UTILS := sss_split sss_combine sss_recover
 LIBS := -lsodium
 UNAME_S := $(shell uname -s)
 
@@ -32,6 +32,9 @@ sss_split: sss_split.o sss_common.o libsss.a
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LIBS)
 
 sss_combine: sss_combine.o sss_common.o libsss.a
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LIBS)
+
+sss_recover: sss_recover.o libsss.a
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LIBS)
 
 .PHONY: check
