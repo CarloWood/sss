@@ -18,7 +18,7 @@
  */
 
 
-#include "randombytes.h"
+#include "sodium/randombytes.h"
 #include "hazmat.h"
 #include <assert.h>
 #include <string.h>
@@ -289,7 +289,7 @@ gf256_inv(uint32_t r[8], uint32_t x[8])
 	bitslice(poly0, key);
 
 	/* Generate the other terms of the polynomial */
-	randombytes((void*) poly, sizeof(poly));
+	randombytes_buf((void*) poly, sizeof(poly));
 
 	for (share_idx = 0; share_idx < n; share_idx++) {
 		/* x value is in 1..n */
