@@ -44,6 +44,19 @@ the shared keys as commandline parameter. It may *not* also be present
 as file in a `MASTERKEY` partition in that case (reducing the
 number of USB sticks further from `N - 1`).
 
+### `recover_share.sh`
+A wrapper script around `sss_recover` that recreates a shared key.
+
+Usage:
+
+Insert at least `N - 1` of the USB sticks in your PC, plus a new
+USB stick that has been prepared to contain a partition with
+label `MASTERKEY<index>` (not containing a `key*` file) for the
+missing <index>, then run `recover_share.sh`. This will reconstruct
+the secret from the USB shares and then write a new share for the
+given index to the spare USB (even if that is a duplicate, so make
+sure to use the correct index).
+
 ### `sss_split`
 This utility is installed in `/usr/local/sbin` upon install (`sudo make install`).
 It is called by `generate_shares.sh`.
@@ -65,3 +78,17 @@ Have N-1 or N shared secrets available (e.g. /tmp/ramdisk/key1,
 /tmp/ramdisk/key2 etc). And run:
 `sss_combine /tmp/ramdisk/secret.key <key1> <key2> ...`
 which then will restore the secret.key.
+
+### `sss_recover`
+This utility is installed in `/usr/local/sbin` upon install (`sudo make install`).
+It is called by `recover_share.sh`.
+
+Usage:
+
+Have N-1 shared secrets available (e.g. /tmp/ramdisk/key1,
+/tmp/ramdisk/key2 etc). And run:
+`sss_recover /tmp/ramdisk/lost.key <index> <key1> <key2> ...`
+which then will recover the lost key with index <index>.
+The index is given in the first byte of each key file, so
+if <key1> and <key2> have '01' and '03', then you probably
+should use `2` for <index>.
