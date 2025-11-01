@@ -4,10 +4,11 @@ CFLAGS += -g -O2 -m64 -std=c99 -pedantic \
 	-D_FORTIFY_SOURCE=2 -fPIC -fno-strict-overflow
 SRCS = hazmat.c sss.c tweetnacl.c
 OBJS := ${SRCS:.c=.o}
+UTILS := sss_split sss_combine
 LIBS := -lsodium
 UNAME_S := $(shell uname -s)
 
-all: libsss.a
+all: libsss.a $(UTILS)
 
 libsss.a: $(OBJS)
     ifeq ($(UNAME_S),Linux)
@@ -27,9 +28,19 @@ hazmat.o: CFLAGS += -funroll-loops
 test_hazmat.out: $(OBJS)
 test_sss.out: $(OBJS)
 
+sss_split: sss_split.o sss_common.o libsss.a
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LIBS)
+
+sss_combine: sss_combine.o sss_common.o libsss.a
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LIBS)
+
 .PHONY: check
 check: test_hazmat.out test_sss.out
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.gch *.a *.out
+	$(RM) *.o *.gch *.a *.out $(UTILS)
+
+.PHONY: install
+install: $(UTILS)
+	cp $(UTILS) /usr/local/sbin
